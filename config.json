@@ -1,0 +1,21 @@
+{
+  "token": "",
+  "directory": {
+    "log": "log",
+    "calender": "calender"
+  },
+  "calender": {
+    "reloadhour": 24,
+    "data": [
+      {
+        "name": "",
+        "url": "",
+        "from": 0,
+        "to": 10
+      }
+    ]
+  },
+  "channel": {
+    "calender": ""
+  }
+}
