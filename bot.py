@@ -3,6 +3,7 @@ from urllib.request import Request, urlopen
 from discord.ext import tasks
 from pathlib import Path
 import json
+import sys
 from calender import Calender, parse_calender
 from datetime import datetime
 from argparse import ArgumentParser
@@ -27,7 +28,8 @@ args = parser.parse_args()
 
 debug = args.debug
 config = json.loads(
-    input() if args.config == '-' else Path(args.config).read_text()
+    str(sys.stdin.read().replace('\n', '').strip())
+    if args.config == '-' else Path(args.config).read_text()
 )
 
 for directory in config['directory']:
@@ -201,14 +203,17 @@ async def put_calender(channel, conf, days, overwrite, **kwargs):
 
 @tasks.loop(hours=24)
 async def loop(client):
-    for conf in config['calender']['data']:
-        await put_calender(
-            await client.fetch_channel(config['channel']['calender']),
-            conf,
-            (0, 9) if client.first_time else (9, 10),
-            True
-        )
-        client.first_time = False
+    try:
+        for conf in config['calender']['data']:
+            await put_calender(
+                await client.fetch_channel(config['channel']['calender']),
+                conf,
+                (0, 9) if client.first_time else (9, 10),
+                True
+            )
+            client.first_time = False
+    except StopIteration as er:
+        print(er)
 
 intents = discord.Intents.default()
 intents.message_content = True
