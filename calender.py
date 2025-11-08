@@ -55,7 +55,10 @@ class CalenderParser:
     def __init__(self, data: LineParser):
         self.data = data
         while True:
-            if next(self.data) == 'BEGIN:VEVENT':
+            try:
+                if next(self.data) == 'BEGIN:VEVENT':
+                    return None
+            except StopIteration as er:
                 return None
 
     def __next__(self):
