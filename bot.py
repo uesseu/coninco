@@ -80,23 +80,27 @@ class CoNinco(discord.Client):
                 with open(attpath / fname, 'wb') as fp:
                     fp.write(await attachment.read())
 
-        if client.user in message.mentions: # 話しかけられたかの判定
+        if client.user in message.mentions:
             reply = f'{message.author.mention} 呼んだ？まだ作成中ですよ？'
             await message.channel.send(reply)
 
         events = Events(message)
-        await events.run()
+        await events.run(message.content)
 
 
 class EventsBase:
-    def __init__(self, message: discord.Message):
+    def __init__(self, message: discord.Message, length: int = 3):
         self.message = message
         self.names = [n for n in self.__dir__() if n.startswith('on_')]
+        self.length = length
 
-    async def run(self, length: int = 3):
+    def parse_args(arg_str: str) -> tuple[list, dict]:
+        pass
+
+    async def run(self, *args, **kwargs):
         for n in self.names:
-            if self.message.content[1:].startswith(n[3:length + 3]):
-                await self.__getattribute__(n)()
+            if self.message.content[1:].startswith(n[3:self.length + 3]):
+                await self.__getattribute__(n)(**kwargs)
 
 
 class Events(EventsBase):
